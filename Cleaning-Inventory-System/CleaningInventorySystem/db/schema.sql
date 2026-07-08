@@ -1,0 +1,2 @@
+-- Database schema for the University Cleaning Inventory & Issuance System.
+-- Add your CREATE TABLE statements here.
