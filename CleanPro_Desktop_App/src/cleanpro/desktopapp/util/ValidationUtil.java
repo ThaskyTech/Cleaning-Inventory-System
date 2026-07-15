@@ -1,13 +1,24 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package cleanpro.desktopapp.util;
+package com.group8.cleaninginventory.util;
 
-/**
- *
- * @author User
- */
-public class ValidationUtil {
-    
+// Shared static helper methods for validating input such as required fields and email format.
+public class ValidationUtils {
+
+    private ValidationUtils() {
+    }
+
+    public static boolean isNullOrBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
+    public static boolean isValidEmail(String email) {
+        if (email == null) {
+            return false;
+        }
+
+        return email.matches("^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    public static boolean isPositive(int value) {
+        return value > 0;
+    }
 }
