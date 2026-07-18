@@ -1,9 +1,8 @@
-package com.group8.cleaninginventory.util;
+package cleanpro.desktopapp.util;
 
-// Shared static helper methods for validating input such as required fields and email format.
-public class ValidationUtils {
+public class ValidationUtil {
 
-    private ValidationUtils() {
+    private ValidationUtil() {
     }
 
     public static boolean isNullOrBlank(String value) {
@@ -14,11 +13,14 @@ public class ValidationUtils {
         if (email == null) {
             return false;
         }
-
         return email.matches("^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$");
     }
 
     public static boolean isPositive(int value) {
         return value > 0;
+    }
+
+    public static boolean isNonNegative(int value) {
+        return value >= 0;
     }
 }

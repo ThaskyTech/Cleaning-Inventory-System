@@ -1,13 +1,27 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package cleanpro.desktopapp.model;
 
-/**
- *
- * @author User
- */
+
+
 public class Role {
+    private int roleId;
+    private String roleName;
+    private String roleDescription;
+    
+    public Role(int roleId, String roleName, String roleDescription) {
+        this.roleId = roleId;
+        this.roleName = roleName;
+        this.roleDescription = roleDescription;
+    }
+    
+    //Getters and Setters
+    
+    public int getRoleId(){return roleId;}
+    
+    public String getRoleName(){return roleName;}
+    public void setRoleName(String roleName){ this.roleName = roleName;}
+    
+    public String getRoleDescription(){ return roleDescription;}
+    public void setRoleDescription(String roleDescription){ this.roleDescription = roleDescription;}
     
 }

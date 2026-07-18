@@ -1,13 +1,37 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package cleanpro.desktopapp.model;
 
-/**
- *
- * @author User
- */
+import java.math.BigDecimal;
+
 public class StockIssuanceItem {
+
+    private int issuanceItemId;
+    private int issuanceId;
+    private int materialId;
+    private int quantityIssued;
+    private BigDecimal unitPriceAtIssue;
+
+    public StockIssuanceItem(int issuanceItemId, int issuanceId, int materialId,
+                              int quantityIssued, BigDecimal unitPriceAtIssue) {
+        this.issuanceItemId = issuanceItemId;
+        this.issuanceId = issuanceId;
+        this.materialId = materialId;
+        this.quantityIssued = quantityIssued;
+        this.unitPriceAtIssue = unitPriceAtIssue;
+    }
+
     
+    //Getters and Setters
+    public int getIssuanceItemId() { return issuanceItemId; }
+
+    public int getIssuanceId() { return issuanceId; }
+    public void setIssuanceId(int issuanceId) { this.issuanceId = issuanceId; }
+
+    public int getMaterialId() { return materialId; }
+
+    public int getQuantityIssued() { return quantityIssued; }
+
+    public BigDecimal getUnitPriceAtIssue() { return unitPriceAtIssue; }
+    public void setUnitPriceAtIssue(BigDecimal unitPriceAtIssue) { this.unitPriceAtIssue = unitPriceAtIssue; }
+
+
 }

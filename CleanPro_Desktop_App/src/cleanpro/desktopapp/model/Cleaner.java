@@ -1,41 +1,56 @@
-package com.group8.cleaninginventory.model;
+package cleanpro.desktopapp.model;
+
+import java.time.LocalDate;
 
 import java.time.LocalDate;
 
 // Represents a cleaner staff member who receives issued materials; extends Person.
-public class Cleaner extends Person {
-    private int cleanerID;
+public class Cleaner{
+    private int cleanerId;
     private String cleanerNumber;
+    private String firstName;
+    private String lastName;
+    private String phoneNumber;
+    private String email;
     private LocalDate employmentDate;
-    private String department;
+    private boolean active;
 
-
-    public Cleaner(int ID,String firstName, String lastName, String contactNumber, String department, String email,
-                   String cleanerNumber, LocalDate employmentDate){
-        super(firstName, lastName, contactNumber, email);
-        this.cleanerID = ID;
+    public Cleaner(int cleanerId, String cleanerNumber, String firstName, String lastName,
+                   String phoneNumber, String email, LocalDate employmentDate, boolean active) {
+        this.cleanerId = cleanerId;
         this.cleanerNumber = cleanerNumber;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
         this.employmentDate = employmentDate;
-        this.department = department;
+        this.active = active;
     }
 
-    @Override
-    public String toString(){
-        return "Cleaner #" + cleanerID + ": " + getFirstName() + " " + getLastName()
-                + (department != null ? " (" + department + ")" : "");
-    }
+    //Getters and Setters
+    
+    public int getCleanerId() { return cleanerId; }
 
-    //Getters and setters
+    public String getCleanerNumber() { return cleanerNumber; }
+    public void setCleanerNumber(String cleanerNumber) { this.cleanerNumber = cleanerNumber; }
 
-    public int getCleanerID(){return cleanerID;}
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
 
-    public String getCleanerNumber(){return cleanerNumber;}
-    public void setCleanerNumber(String cleanerNumber){this.cleanerNumber = cleanerNumber;}
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
 
-    public LocalDate getEmploymentDate(){return employmentDate;}
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
-    public String getDepartment(){return department;}
-    public void setDepartment(String department){this.department = department;}
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public LocalDate getEmploymentDate() { return employmentDate; }
+    public void setEmploymentDate(LocalDate employmentDate) { this.employmentDate = employmentDate; }
+
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 
 
 }

@@ -1,47 +1,66 @@
-package com.group8.cleaninginventory.model;
+package cleanpro.desktopapp.model;
 
-// Represents a cleaning material/stock item, including quantity available and reorder level.
+import java.math.BigDecimal;
+
 public class Material {
 
-    private int materialID;
+    private int materialId;
     private String materialName;
-    private String description;
-    //Remove private String category;
-    private int quantityAvailable;
+    private String materialDescription;
+    private int supplierId;
+    private int currentQuantity;
     private int reorderLevel;
-    private int supplierID;
+    private int maximumStockLevel;
+    private BigDecimal unitPrice;
+    private String unit;
 
-    //Unit * unit price = overall price;
-
-    public Material(int materialID, String name, String description, String category, int quantityAvailable,
-                    int reorderLevel, int supplierID) {
-        this.materialID = materialID;
-        this.materialName = name;
-        this.description = description;
-        setquantityAvailable(quantityAvailable);
+    public Material(int materialId, String materialName, String materialDescription, int supplierId,
+                     int currentQuantity, int reorderLevel, int maximumStockLevel,
+                     BigDecimal unitPrice, String unit) {
+        this.materialId = materialId;
+        this.materialName = materialName;
+        this.materialDescription = materialDescription;
+        this.supplierId = supplierId;
+        setCurrentQuantity(currentQuantity); 
         this.reorderLevel = reorderLevel;
-        this.supplierID = supplierID;
+        this.maximumStockLevel = maximumStockLevel;
+        this.unitPrice = unitPrice;
+        this.unit = unit;
     }
 
+    
+    public boolean isLowStock(){return currentQuantity <= reorderLevel;}
+    
+    public boolean isOverMaximumStock(){return currentQuantity > maximumStockLevel;}
+    
+    
     //Getters and Setters
-
-    public int getMaterialID(){return materialID;}
-
+    public int getMaterialId(){return materialId;}
+    
     public String getMaterialName(){return materialName;}
-    public void setMaterialName(String name){this.materialName = name;}
+    public void setMaterialName(String materialName){this.materialName = materialName;}
+    
+    public String getMaterialDescription(){return materialDescription;}
+    public void setMaterialDescription(String materialDescription){this.materialDescription = materialDescription;}
+    
+    public int getSupplierId(){return supplierId;}
+    public void setSupplierId(int supplierId){this.supplierId = supplierId;}
+    
+    public int getCurrentQuantity(){return currentQuantity;}
+    public void setCurrentQuantity(int currentQuantity){
+        if(currentQuantity < 0){throw new IllegalArgumentException("Stcok Quantity cannot be a negative!");}
+        this.currentQuantity = currentQuantity;
+    }
+    
+    public int getReorderLevel() { return reorderLevel; }
+    public void setReorderLevel(int reorderLevel) { this.reorderLevel = reorderLevel; }
 
-    public String getDescription(){return description;}
-    public void setDescription(String description){this.description = description;}
+    public int getMaximumStockLevel() { return maximumStockLevel; }
+    public void setMaximumStockLevel(int maximumStockLevel) { this.maximumStockLevel = maximumStockLevel; }
 
-    public int getQuantityAvailable(){return quantityAvailable;}
-    public void setquantityAvailable(int quantityAvailable){this.quantityAvailable = quantityAvailable;}
+    public BigDecimal getUnitPrice() { return unitPrice; }
+    public void setUnitPrice(BigDecimal unitPrice) { this.unitPrice = unitPrice; }
 
-    public int getReorderLevel(){return reorderLevel;}
-    public void setReorderLevel(int reorderLevel){this.reorderLevel = reorderLevel;}
-
-    public int getSupplierId() { return supplierID; }
-    public void setSupplierId(int supplierId) { this.supplierID = supplierId; }
-
-    public boolean isLowStock(){return quantityAvailable <= reorderLevel;}
-
+    public String getUnit() { return unit; }
+    public void setUnit(String unit) { this.unit = unit; }
 }
