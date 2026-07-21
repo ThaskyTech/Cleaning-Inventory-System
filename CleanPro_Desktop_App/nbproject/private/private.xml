@@ -3,17 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/User/OneDrive%20-%20belgiumcampus.ac.za/Documents/Belgium%20Campus/4th%20Year/PRG381/Project/CleanPro_Desktop_App/src/cleanpro_desktop_app/CleanPro_Desktop_App.java</file>
-            <file>file:/C:/Users/User/OneDrive%20-%20belgiumcampus.ac.za/Documents/Belgium%20Campus/4th%20Year/PRG381/Project/CleanPro_Desktop_App/src/cleanpro/desktopapp/model/User.java</file>
-            <file>file:/C:/Users/User/OneDrive%20-%20belgiumcampus.ac.za/Documents/Belgium%20Campus/4th%20Year/PRG381/Project/CleanPro_Desktop_App/src/cleanpro/desktopapp/model/Cleaner.java</file>
-            <file>file:/C:/Users/User/OneDrive%20-%20belgiumcampus.ac.za/Documents/Belgium%20Campus/4th%20Year/PRG381/Project/CleanPro_Desktop_App/src/cleanpro/desktopapp/model/Material.java</file>
-            <file>file:/C:/Users/User/OneDrive%20-%20belgiumcampus.ac.za/Documents/Belgium%20Campus/4th%20Year/PRG381/Project/CleanPro_Desktop_App/src/cleanpro/desktopapp/model/Supplier.java</file>
-            <file>file:/C:/Users/User/OneDrive%20-%20belgiumcampus.ac.za/Documents/Belgium%20Campus/4th%20Year/PRG381/Project/CleanPro_Desktop_App/src/cleanpro/desktopapp/model/Role.java</file>
-            <file>file:/C:/Users/User/OneDrive%20-%20belgiumcampus.ac.za/Documents/Belgium%20Campus/4th%20Year/PRG381/Project/CleanPro_Desktop_App/src/cleanpro/desktopapp/model/StockIssuance.java</file>
-            <file>file:/C:/Users/User/OneDrive%20-%20belgiumcampus.ac.za/Documents/Belgium%20Campus/4th%20Year/PRG381/Project/CleanPro_Desktop_App/src/cleanpro/desktopapp/model/StockIssuanceItem.java</file>
-            <file>file:/C:/Users/User/OneDrive%20-%20belgiumcampus.ac.za/Documents/Belgium%20Campus/4th%20Year/PRG381/Project/CleanPro_Desktop_App/src/cleanpro/desktopapp/dao/UserDAO.java</file>
-            <file>file:/C:/Users/User/OneDrive%20-%20belgiumcampus.ac.za/Documents/Belgium%20Campus/4th%20Year/PRG381/Project/CleanPro_Desktop_App/src/cleanpro/desktopapp/dao/CleanerDAO.java</file>
-            <file>file:/C:/Users/User/OneDrive%20-%20belgiumcampus.ac.za/Documents/Belgium%20Campus/4th%20Year/PRG381/Project/CleanPro_Desktop_App/src/cleanpro/desktopapp/dao/MaterialDAO.java</file>
+            <file>file:/C:/Users/LTMol/OneDrive/Documents/NetBeansProjects/Cleaning-Inventory-System/CleanPro_Desktop_App/src/cleanpro/desktopapp/view/Dashboard.java</file>
+            <file>file:/C:/Users/LTMol/OneDrive/Documents/NetBeansProjects/Cleaning-Inventory-System/CleanPro_Desktop_App/src/cleanpro/desktopapp/service/CleanerService.java</file>
+            <file>file:/C:/Users/LTMol/OneDrive/Documents/NetBeansProjects/Cleaning-Inventory-System/CleanPro_Desktop_App/src/cleanpro/desktopapp/view/CleanersPanel.java</file>
         </group>
     </open-files>
 </project-private>
