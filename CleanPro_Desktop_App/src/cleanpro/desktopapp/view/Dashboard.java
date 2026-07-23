@@ -1,5 +1,8 @@
 package cleanpro.desktopapp.view;
 
+import cleanpro.desktopapp.service.DashboardService;
+import cleanpro.desktopapp.model.DashboardSummary;
+import cleanpro.desktopapp.model.RecentIssuance;
 import cleanpro.desktopapp.view.CleanersPanel;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
@@ -8,10 +11,13 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Dashboard extends JFrame {
 
     private final String username;
+    private final DashboardService dashboardService = new DashboardService();
     private JPanel contentPanel;
     private JLabel currentViewLabel;
     private JPanel sidebarPanel;
@@ -23,10 +29,11 @@ public class Dashboard extends JFrame {
     private static final String MENU_CLEANERS = "Cleaners";
     private static final String MENU_ISSUANCES = "Stock Issuances";
     private static final String MENU_ADJUSTMENTS = "Adjustments";
+    private static final String MENU_REPORTS = "Reports";
 
     private static final String[] MENU_ITEMS = {
         MENU_DASHBOARD, MENU_SUPPLIERS, MENU_MATERIALS,
-        MENU_CLEANERS, MENU_ISSUANCES, MENU_ADJUSTMENTS
+        MENU_CLEANERS, MENU_ISSUANCES, MENU_ADJUSTMENTS, MENU_REPORTS
     };
 
     private JPanel[] menuItemPanels;
@@ -219,6 +226,7 @@ public class Dashboard extends JFrame {
         viewsPanel.add(new CleanersPanel(), MENU_CLEANERS);
         viewsPanel.add(new StockIssuancesPanel(), MENU_ISSUANCES);
         viewsPanel.add(new StockAdjustmentsPanel(), MENU_ADJUSTMENTS);
+        viewsPanel.add(new ReportsPanel(), MENU_REPORTS);
 
         container.add(viewsPanel, BorderLayout.CENTER);
         return container;
@@ -262,13 +270,21 @@ public class Dashboard extends JFrame {
         banner.add(welcomeSub);
         panel.add(banner, "span 3, growx, height 120!, wrap");
 
-        panel.add(buildStatCard("Total Materials", "5", UITheme.ACCENT), "grow");
-        panel.add(buildStatCard("Active Cleaners", "4", UITheme.TEAL_DARK), "grow");
-        panel.add(buildStatCard("Suppliers", "3", new Color(0, 150, 136)), "grow, wrap");
+        DashboardSummary summary = dashboardService.getDashboardSummary();
 
-        panel.add(buildStatCard("Pending Issuances", "2", new Color(255, 152, 0)), "grow");
-        panel.add(buildStatCard("Stock Adjustments", "3", new Color(76, 175, 80)), "grow");
-        panel.add(buildStatCard("Low Stock Items", "1", UITheme.DANGER), "grow, wrap");
+        panel.add(buildStatCard("Total Materials", String.valueOf(summary.getTotalMaterials()), UITheme.ACCENT), "grow");
+        panel.add(buildStatCard("Active Cleaners", String.valueOf(summary.getTotalCleaners()), UITheme.TEAL_DARK), "grow");
+        // TODO: no supplier count in DashboardSummary yet — wire up if/when needed (e.g. add
+        // getTotalSuppliers() to DashboardService, backed by SupplierDAO.getAll().size()).
+        panel.add(buildStatCard("Suppliers", "-", new Color(0, 150, 136)), "grow, wrap");
+
+        // TODO: "Pending Issuances" would need a status filter (StockIssuance.Status.PENDING)
+        // once the Stock Issuance screen actually creates issuances with that status.
+        panel.add(buildStatCard("Pending Issuances", "-", new Color(255, 152, 0)), "grow");
+        // TODO: Stock Adjustments has no backing table/service yet at all (see StockAdjustmentsPanel) —
+        // nothing to wire this to until that feature is actually built out.
+        panel.add(buildStatCard("Stock Adjustments", "-", new Color(76, 175, 80)), "grow");
+        panel.add(buildStatCard("Low Stock Items", String.valueOf(summary.getLowStockCount()), UITheme.DANGER), "grow, wrap");
 
         JPanel activityPanel = new UIComponents.GlassmorphismPanel(20, UITheme.ACCENT, 0);
         activityPanel.setLayout(new MigLayout("wrap, insets 20, fillx", "[grow]"));
@@ -279,13 +295,14 @@ public class Dashboard extends JFrame {
         activityTitle.setForeground(UITheme.TEXT_DARK);
         activityPanel.add(activityTitle, "gapbottom 12");
 
-        String[] activities = {
-            "Stock adjustment #3: Floor Cleaner +20 units",
-            "New supplier registered: Sparkle Materials",
-            "Issuance #103 to David Lee - Emergency restock",
-            "Cleaner Carol White marked as inactive",
-            "Material Disinfectant Spray below reorder level"
-        };
+        List<String> activities = new ArrayList<>();
+        for (RecentIssuance issuance : summary.getRecentIssuances()) {
+            activities.add("Issuance " + issuance.getIssuanceNumber() + " to "
+                    + issuance.getCleanerFullName() + " - " + issuance.getStatus());
+        }
+        if (activities.isEmpty()) {
+            activities.add("No stock issuances recorded yet.");
+        }
         for (String act : activities) {
             JLabel actLabel = new JLabel("- " + act);
             actLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));

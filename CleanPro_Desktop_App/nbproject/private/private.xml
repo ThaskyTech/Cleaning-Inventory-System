@@ -3,9 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/LTMol/OneDrive/Documents/NetBeansProjects/Cleaning-Inventory-System/CleanPro_Desktop_App/src/cleanpro/desktopapp/view/Dashboard.java</file>
-            <file>file:/C:/Users/LTMol/OneDrive/Documents/NetBeansProjects/Cleaning-Inventory-System/CleanPro_Desktop_App/src/cleanpro/desktopapp/service/CleanerService.java</file>
-            <file>file:/C:/Users/LTMol/OneDrive/Documents/NetBeansProjects/Cleaning-Inventory-System/CleanPro_Desktop_App/src/cleanpro/desktopapp/view/CleanersPanel.java</file>
+            <file>file:/C:/Users/LTMol/OneDrive/Documents/NetBeansProjects/Cleaning-Inventory-System/CleanPro_Desktop_App/src/cleanpro/desktopapp/Main.java</file>
+            <file>file:/C:/Users/LTMol/OneDrive/Documents/NetBeansProjects/Cleaning-Inventory-System/CleanPro_Desktop_App/src/cleanpro/desktopapp/view/LoginandSignup.java</file>
+            <file>file:/C:/Users/LTMol/OneDrive/Documents/NetBeansProjects/Cleaning-Inventory-System/CleanPro_Desktop_App/src/cleanpro/desktopapp/view/Login.java</file>
+            <file>file:/C:/Users/LTMol/OneDrive/Documents/NetBeansProjects/Cleaning-Inventory-System/CleanPro_Desktop_App/src/cleanpro/desktopapp/controller/CleanerController.java</file>
         </group>
     </open-files>
 </project-private>

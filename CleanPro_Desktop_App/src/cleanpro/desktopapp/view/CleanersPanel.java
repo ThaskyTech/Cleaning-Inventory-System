@@ -5,8 +5,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
-import loginandsignup.UIComponents;
-import loginandsignup.UITheme;
 
 public class CleanersPanel extends JPanel {
 

@@ -135,9 +135,9 @@ public class CleanerService {
         // Phone validation
 
         if (!ValidationUtil.isNullOrBlank(
-                cleaner.getPhone())) {
+                cleaner.getPhoneNumber())) {
 
-            if (!cleaner.getPhone()
+            if (!cleaner.getPhoneNumber()
                     .matches("\\d{10,15}")) {
 
                 throw new ValidationException(
@@ -164,7 +164,7 @@ public class CleanerService {
 
         if (cleaner.getEmploymentDate() != null) {
             LocalDate employmentDate =
-                    cleaner.getEmploymentDate().toLocalDate();
+                    cleaner.getEmploymentDate();
 
             if (employmentDate.isAfter(
                     LocalDate.now())) {

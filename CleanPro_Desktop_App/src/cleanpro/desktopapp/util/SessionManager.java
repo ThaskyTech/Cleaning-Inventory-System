@@ -1,6 +1,6 @@
-package com.group8.cleaninginventory.util;
+package cleanpro.desktopapp.util;
 
-import com.group8.cleaninginventory.model.User;
+import cleanpro.desktopapp.model.User;
 
 
 public class SessionManager {

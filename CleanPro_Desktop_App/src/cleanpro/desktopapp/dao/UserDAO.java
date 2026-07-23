@@ -14,8 +14,50 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDAO {
+    
+    public List<User> getAll() {
+    String sql = """
+            SELECT user_id, first_name, last_name, email, phone_number,
+                   username, password_hash, role_id, is_active, last_login
+            FROM users
+            """;
+    List<User> results = new ArrayList<>();
+    try (Connection connection = DBConnection.getConnection();
+         PreparedStatement statement = connection.prepareStatement(sql);
+         ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next()) {
+            results.add(mapUser(resultSet));
+        }
+    } catch (SQLException exception) {
+        throw new RuntimeException("Could not retrieve the list of users.", exception);
+    }
+    return results;
+}
+
+public User getById(int userId) {
+    String sql = """
+            SELECT user_id, first_name, last_name, email, phone_number,
+                   username, password_hash, role_id, is_active, last_login
+            FROM users
+            WHERE user_id = ?
+            """;
+    try (Connection connection = DBConnection.getConnection();
+         PreparedStatement statement = connection.prepareStatement(sql)) {
+        statement.setInt(1, userId);
+        try (ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next()) {
+                return mapUser(resultSet);
+            }
+        }
+    } catch (SQLException exception) {
+        throw new RuntimeException("Could not retrieve the user with ID: " + userId, exception);
+    }
+    return null;
+}
 
     /*
      * Retrieves a user using their username.
