@@ -1,5 +1,9 @@
 package cleanpro.desktopapp.view;
 
+import cleanpro.desktopapp.controller.LoginController;
+import cleanpro.desktopapp.model.Role;
+import cleanpro.desktopapp.service.exceptions.DuplicateEntryException;
+import cleanpro.desktopapp.service.exceptions.ValidationException;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
@@ -18,8 +22,20 @@ public class Registration extends JFrame {
     private UIComponents.RoundedPasswordField passwordField;
     private UIComponents.RoundedPasswordField confirmPasswordField;
     private JComboBox<String> roleCombo;
+    private final LoginController loginController = new LoginController();
+    private final java.util.Map<String, Integer> roleIdsByName = new java.util.HashMap<>();
     private UIComponents.InlineErrorLabel errorLabel;
     private UIComponents.BubbleBackgroundPanel background;
+    
+    private void loadRoles() {
+        roleIdsByName.clear();
+        roleCombo.removeAllItems();
+
+        for (Role role : loginController.getAllRoles()) {
+            roleIdsByName.put(role.getRoleName(), role.getRoleId());
+            roleCombo.addItem(role.getRoleName());
+        }
+    }
 
     public Registration() {
         setTitle("REGISTER");
@@ -130,10 +146,11 @@ public class Registration extends JFrame {
 
         // Row 3: Confirm Password | Role
         card.add(fieldGroup("Confirm Password", confirmPasswordField = new UIComponents.RoundedPasswordField("Re-enter your password")), "growx");
-        roleCombo = UIComponents.styledComboBox(new String[]{"Manger", "Cleaner","Admin"});
+        roleCombo = UIComponents.styledComboBox(new String[]{});
         card.add(fieldGroup("Role", roleCombo), "growx");
 
         errorLabel = new UIComponents.InlineErrorLabel();
+        loadRoles();
         card.add(errorLabel, "span 2, growx, height 22!, gaptop 8");
 
         UIComponents.AnimatedButton registerBtn =
@@ -194,23 +211,42 @@ public class Registration extends JFrame {
             errorLabel.showError("Please fill in all fields.");
             return;
         }
+
         if (!EMAIL_PATTERN.matcher(email).matches()) {
             errorLabel.showError("Please enter a valid email address.");
             return;
         }
-        if (password.length < 6) {
-            errorLabel.showError("Password must be at least 6 characters.");
-            return;
-        }
+
         if (!new String(password).equals(new String(confirmPassword))) {
             errorLabel.showError("Passwords do not match.");
             return;
         }
-        errorLabel.clear();
-        JOptionPane.showMessageDialog(this,
-                "Registration successful (placeholder).\nHook this up to the real backend.",
-                "Registration", JOptionPane.INFORMATION_MESSAGE);
-        openLogin();
+
+        String[] nameParts = fullName.split("\s+", 2);
+        String firstName = nameParts[0];
+        String lastName = nameParts.length > 1 ? nameParts[1] : "";
+
+        String selectedRole = (String) roleCombo.getSelectedItem();
+        Integer roleId = selectedRole == null ? null : roleIdsByName.get(selectedRole);
+
+        if (roleId == null) {
+            errorLabel.showError("Please select a valid role.");
+            return;
+        }
+
+        try {
+            loginController.register(firstName, lastName, email, "",
+                    username, new String(password), roleId);
+
+            errorLabel.clear();
+            JOptionPane.showMessageDialog(this,
+                    "Registration successful.",
+                    "Registration", JOptionPane.INFORMATION_MESSAGE);
+            openLogin();
+
+        } catch (DuplicateEntryException | ValidationException ex) {
+            errorLabel.showError(ex.getMessage());
+        }
     }
 
     private void openLogin() {

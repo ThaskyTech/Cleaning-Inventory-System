@@ -12,6 +12,8 @@ public class CleanersPanel extends JPanel {
     private DefaultTableModel model;
     private JTextField nameField, phoneField, emailField, deptField;
     private JCheckBox activeBox;
+    private final cleanpro.desktopapp.controller.CleanerController cleanerController =
+        new cleanpro.desktopapp.controller.CleanerController();
 
     public CleanersPanel() {
         setLayout(new MigLayout("fill, insets 24", "[grow]", "[grow]"));
@@ -53,7 +55,7 @@ public class CleanersPanel extends JPanel {
         JScrollPane scroll = createStyledScrollPane(table);
         panel.add(scroll, "grow, wrap");
 
-        loadSampleData();
+        loadCleaners();
 
         JPanel actionPanel = new JPanel(new MigLayout("insets 0, gapx 8"));
         actionPanel.setBackground(UITheme.FIELD_BG);
@@ -107,11 +109,18 @@ public class CleanersPanel extends JPanel {
         return sp;
     }
 
-    private void loadSampleData() {
-        model.addRow(new Object[]{1, "Alice Cooper", "555-0201", "alice@cleanpro.com", "Residential", "Active", "2024-01-10"});
-        model.addRow(new Object[]{2, "Bob Martinez", "555-0202", "bob@cleanpro.com", "Commercial", "Active", "2024-02-15"});
-        model.addRow(new Object[]{3, "Carol White", "555-0203", "carol@cleanpro.com", "Residential", "Inactive", "2024-03-05"});
-        model.addRow(new Object[]{4, "David Lee", "555-0204", "david@cleanpro.com", "Industrial", "Active", "2024-04-12"});
+    private void loadCleaners() {
+        model.setRowCount(0);
+        for (cleanpro.desktopapp.model.Cleaner c : cleanerController.getAllCleaners()) {
+            model.addRow(new Object[]{
+                c.getCleanerId(),
+                c.getFirstName() + " " + c.getLastName(),
+                c.getPhoneNumber(),
+                c.getEmail(),
+                c.isActive() ? "Active" : "Inactive",
+                c.getEmploymentDate()
+            });
+        }
     }
 
     private void showCleanerDialog(Integer rowIndex) {
@@ -161,24 +170,30 @@ public class CleanersPanel extends JPanel {
             isEdit ? "Update" : "Save", UITheme.ACCENT, UITheme.ACCENT_HOVER);
         saveBtn.setFont(new Font("Segoe UI", Font.BOLD, 13));
         saveBtn.addActionListener(e -> {
-            if (nameField.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(dialog, "Full name is required.");
-                return;
+            try {
+                String[] parts = nameField.getText().trim().split(" ", 2);
+                String first = parts[0];
+                String last = parts.length > 1 ? parts[1] : "";
+
+                if (isEdit) {
+                    int cleanerId = (int) model.getValueAt(rowIndex, 0);
+                    cleanpro.desktopapp.model.Cleaner c = new cleanpro.desktopapp.model.Cleaner(
+                        cleanerId, "C-" + cleanerId, first, last,
+                        phoneField.getText().trim(), emailField.getText().trim(),
+                        java.time.LocalDate.now(), activeBox.isSelected());
+                    cleanerController.updateCleaner(c);
+                } else {
+                    cleanpro.desktopapp.model.Cleaner c = new cleanpro.desktopapp.model.Cleaner(
+                        0, "C-" + System.currentTimeMillis() % 100000, first, last,
+                        phoneField.getText().trim(), emailField.getText().trim(),
+                        java.time.LocalDate.now(), activeBox.isSelected());
+                    cleanerController.addCleaner(c);
+                }
+                loadCleaners();
+                dialog.dispose();
+            } catch (cleanpro.desktopapp.service.exceptions.ValidationException ex) {
+                JOptionPane.showMessageDialog(dialog, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-            String status = activeBox.isSelected() ? "Active" : "Inactive";
-            if (isEdit) {
-                model.setValueAt(nameField.getText(), rowIndex, 1);
-                model.setValueAt(phoneField.getText(), rowIndex, 2);
-                model.setValueAt(emailField.getText(), rowIndex, 3);
-                model.setValueAt(deptField.getText(), rowIndex, 4);
-                model.setValueAt(status, rowIndex, 5);
-            } else {
-                int newId = model.getRowCount() + 1;
-                model.addRow(new Object[]{newId, nameField.getText(), phoneField.getText(),
-                    emailField.getText(), deptField.getText(), status,
-                    java.time.LocalDate.now().toString()});
-            }
-            dialog.dispose();
         });
 
         btnPanel.add(cancelBtn, "width 100!, height 38!, gapx 8");
@@ -202,10 +217,15 @@ public class CleanersPanel extends JPanel {
             return;
         }
         int confirm = JOptionPane.showConfirmDialog(this,
-            "Are you sure you want to delete this cleaner?",
-            "Confirm Delete", JOptionPane.YES_NO_OPTION);
+            "Are you sure you want to delete this cleaner?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            model.removeRow(row);
+            try {
+                int cleanerId = (int) model.getValueAt(row, 0);
+                cleanerController.deleteCleaner(cleanerId);
+                loadCleaners();
+            } catch (cleanpro.desktopapp.service.exceptions.ValidationException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }

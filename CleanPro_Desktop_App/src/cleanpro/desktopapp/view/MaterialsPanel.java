@@ -1,21 +1,26 @@
 package cleanpro.desktopapp.view;
 
+import cleanpro.desktopapp.controller.MaterialController;
+import cleanpro.desktopapp.model.Material;
+import cleanpro.desktopapp.model.Supplier;
+import cleanpro.desktopapp.service.exceptions.ValidationException;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
+import java.util.List;
 
 public class MaterialsPanel extends JPanel {
 
+    private final MaterialController materialController = new MaterialController();
+
     private JTable table;
     private DefaultTableModel model;
-    private JTextField nameField, descField, categoryField, unitField;
-    private JSpinner qtySpinner, reorderSpinner;
-    private JComboBox<String> supplierCombo;
-    private int selectedRow = -1;
+    private JTextField nameField, descField, unitField, unitPriceField;
+    private JSpinner qtySpinner, reorderSpinner, maxStockSpinner;
+    private JComboBox<Supplier> supplierCombo;
 
     public MaterialsPanel() {
         setLayout(new MigLayout("fill, insets 24", "[grow]", "[grow]"));
@@ -36,7 +41,6 @@ public class MaterialsPanel extends JPanel {
         title.setForeground(UITheme.TEXT_DARK);
         panel.add(title, "wrap");
 
-        // Search + Add bar
         JPanel topBar = new JPanel(new MigLayout("insets 0, fillx", "[grow][]", "[center]"));
         topBar.setBackground(UITheme.FIELD_BG);
 
@@ -50,8 +54,7 @@ public class MaterialsPanel extends JPanel {
         topBar.add(addBtn, "width 150!, height 40!");
         panel.add(topBar, "growx, wrap");
 
-        // Table
-        String[] cols = {"ID", "Material Name", "Category", "Unit", "Qty Available", "Reorder Level", "Supplier"};
+        String[] cols = {"ID", "Material Name", "Description", "Unit", "Qty Available", "Reorder Level", "Max Stock", "Unit Price", "Supplier"};
         model = new DefaultTableModel(cols, 0) {
             @Override public boolean isCellEditable(int row, int col) { return false; }
         };
@@ -59,9 +62,8 @@ public class MaterialsPanel extends JPanel {
         JScrollPane scroll = createStyledScrollPane(table);
         panel.add(scroll, "grow, wrap");
 
-        loadSampleData();
+        loadMaterials();
 
-        // Action buttons
         JPanel actionPanel = new JPanel(new MigLayout("insets 0, gapx 8"));
         actionPanel.setBackground(UITheme.FIELD_BG);
 
@@ -90,7 +92,6 @@ public class MaterialsPanel extends JPanel {
         JTable t = new JTable(model);
         t.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         t.setRowHeight(40);
-        t.setGridColor(new Color(230, 235, 235));
         t.setSelectionBackground(new Color(0, 168, 150, 30));
         t.setSelectionForeground(UITheme.TEXT_DARK);
         t.setShowGrid(true);
@@ -114,19 +115,30 @@ public class MaterialsPanel extends JPanel {
         return sp;
     }
 
-    private void loadSampleData() {
-        model.addRow(new Object[]{1, "Disinfectant Spray", "Chemicals", "Litre", 50, 10, "CleanSupplies Co."});
-        model.addRow(new Object[]{2, "Microfiber Cloths", "Tools", "Pack", 120, 20, "EcoClean Ltd"});
-        model.addRow(new Object[]{3, "Floor Cleaner", "Chemicals", "Litre", 30, 5, "Sparkle Materials"});
-        model.addRow(new Object[]{4, "Vacuum Bags", "Tools", "Pack", 45, 8, "CleanSupplies Co."});
-        model.addRow(new Object[]{5, "Glass Cleaner", "Chemicals", "Litre", 25, 5, "EcoClean Ltd"});
+    // Pulls real rows from the database via the controller.
+    private void loadMaterials() {
+        model.setRowCount(0);
+        List<Supplier> suppliers = materialController.getAllSuppliers();
+        for (Material m : materialController.getAllMaterials()) {
+            String supplierName = suppliers.stream()
+                .filter(s -> s.getSupplierId() == m.getSupplierId())
+                .map(Supplier::getSupplierName)
+                .findFirst().orElse("Unknown");
+            model.addRow(new Object[]{
+                m.getMaterialId(), m.getMaterialName(), m.getMaterialDescription(),
+                m.getUnit(), m.getCurrentQuantity(), m.getReorderLevel(),
+                m.getMaximumStockLevel(), m.getUnitPrice(), supplierName
+            });
+        }
     }
 
     private void showMaterialDialog(Integer rowIndex) {
         boolean isEdit = rowIndex != null;
+        int materialId = isEdit ? (int) model.getValueAt(rowIndex, 0) : 0;
+
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this),
             isEdit ? "Edit Material" : "Add Material", true);
-        dialog.setSize(520, 520);
+        dialog.setSize(520, 620);
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(new BorderLayout());
 
@@ -135,28 +147,48 @@ public class MaterialsPanel extends JPanel {
 
         nameField = new UIComponents.RoundedTextField("Enter material name");
         descField = new UIComponents.RoundedTextField("Enter description");
-        categoryField = new UIComponents.RoundedTextField("Enter category");
         unitField = new UIComponents.RoundedTextField("e.g. Litre, Pack, Box");
-        qtySpinner = new JSpinner(new SpinnerNumberModel(0, 0, 9999, 1));
-        reorderSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 9999, 1));
-        supplierCombo = new JComboBox<>(new String[]{"CleanSupplies Co.", "EcoClean Ltd", "Sparkle Materials"});
+        unitPriceField = new UIComponents.RoundedTextField("e.g. 49.99");
+        qtySpinner = new JSpinner(new SpinnerNumberModel(0, 0, 999999, 1));
+        reorderSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 999999, 1));
+        maxStockSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 999999, 1));
+
+        List<Supplier> suppliers = materialController.getAllSuppliers();
+        supplierCombo = new JComboBox<>(suppliers.toArray(new Supplier[0]));
+        supplierCombo.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                    boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof Supplier s) setText(s.getSupplierName());
+                return this;
+            }
+        });
         styleCombo(supplierCombo);
 
         if (isEdit) {
-            nameField.setText((String) model.getValueAt(rowIndex, 1));
-            categoryField.setText((String) model.getValueAt(rowIndex, 2));
-            unitField.setText((String) model.getValueAt(rowIndex, 3));
-            qtySpinner.setValue(model.getValueAt(rowIndex, 4));
-            reorderSpinner.setValue(model.getValueAt(rowIndex, 5));
-            supplierCombo.setSelectedItem(model.getValueAt(rowIndex, 6));
+            Material m = materialController.getAllMaterials().stream()
+                .filter(mm -> mm.getMaterialId() == materialId).findFirst().orElse(null);
+            if (m != null) {
+                nameField.setText(m.getMaterialName());
+                descField.setText(m.getMaterialDescription());
+                unitField.setText(m.getUnit());
+                unitPriceField.setText(m.getUnitPrice() != null ? m.getUnitPrice().toString() : "");
+                qtySpinner.setValue(m.getCurrentQuantity());
+                reorderSpinner.setValue(m.getReorderLevel());
+                maxStockSpinner.setValue(m.getMaximumStockLevel());
+                suppliers.stream().filter(s -> s.getSupplierId() == m.getSupplierId())
+                    .findFirst().ifPresent(supplierCombo::setSelectedItem);
+            }
         }
 
         form.add(newFormLabel("Material Name:")); form.add(nameField, "growx, height 38!");
         form.add(newFormLabel("Description:")); form.add(descField, "growx, height 38!");
-        form.add(newFormLabel("Category:")); form.add(categoryField, "growx, height 38!");
         form.add(newFormLabel("Unit:")); form.add(unitField, "growx, height 38!");
+        form.add(newFormLabel("Unit Price:")); form.add(unitPriceField, "growx, height 38!");
         form.add(newFormLabel("Quantity Available:")); form.add(qtySpinner, "width 120!, height 38!");
         form.add(newFormLabel("Reorder Level:")); form.add(reorderSpinner, "width 120!, height 38!");
+        form.add(newFormLabel("Maximum Stock:")); form.add(maxStockSpinner, "width 120!, height 38!");
         form.add(newFormLabel("Supplier:")); form.add(supplierCombo, "growx, height 38!");
 
         dialog.add(form, BorderLayout.CENTER);
@@ -173,24 +205,42 @@ public class MaterialsPanel extends JPanel {
             isEdit ? "Update" : "Save", UITheme.ACCENT, UITheme.ACCENT_HOVER);
         saveBtn.setFont(new Font("Segoe UI", Font.BOLD, 13));
         saveBtn.addActionListener(e -> {
-            if (nameField.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(dialog, "Material name is required.");
+            Supplier selectedSupplier = (Supplier) supplierCombo.getSelectedItem();
+            if (selectedSupplier == null) {
+                JOptionPane.showMessageDialog(dialog, "Please select a supplier.");
                 return;
             }
-            if (isEdit) {
-                model.setValueAt(nameField.getText(), rowIndex, 1);
-                model.setValueAt(categoryField.getText(), rowIndex, 2);
-                model.setValueAt(unitField.getText(), rowIndex, 3);
-                model.setValueAt(qtySpinner.getValue(), rowIndex, 4);
-                model.setValueAt(reorderSpinner.getValue(), rowIndex, 5);
-                model.setValueAt(supplierCombo.getSelectedItem(), rowIndex, 6);
-            } else {
-                int newId = model.getRowCount() + 1;
-                model.addRow(new Object[]{newId, nameField.getText(), categoryField.getText(),
-                    unitField.getText(), qtySpinner.getValue(), reorderSpinner.getValue(),
-                    supplierCombo.getSelectedItem()});
+            BigDecimal unitPrice;
+            try {
+                unitPrice = new BigDecimal(unitPriceField.getText().trim());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(dialog, "Unit price must be a valid number.");
+                return;
             }
-            dialog.dispose();
+
+            Material material = new Material(
+                materialId,
+                nameField.getText().trim(),
+                descField.getText().trim(),
+                selectedSupplier.getSupplierId(),
+                (int) qtySpinner.getValue(),
+                (int) reorderSpinner.getValue(),
+                (int) maxStockSpinner.getValue(),
+                unitPrice,
+                unitField.getText().trim()
+            );
+
+            try {
+                if (isEdit) {
+                    materialController.updateMaterial(material);
+                } else {
+                    materialController.addMaterial(material);
+                }
+                loadMaterials();
+                dialog.dispose();
+            } catch (ValidationException ex) {
+                JOptionPane.showMessageDialog(dialog, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
 
         btnPanel.add(cancelBtn, "width 100!, height 38!, gapx 8");
@@ -200,7 +250,7 @@ public class MaterialsPanel extends JPanel {
         dialog.setVisible(true);
     }
 
-    private void styleCombo(JComboBox<String> combo) {
+    private void styleCombo(JComboBox<Supplier> combo) {
         combo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         combo.setBackground(UITheme.FIELD_BG);
         combo.setForeground(UITheme.TEXT_DARK);
@@ -223,7 +273,13 @@ public class MaterialsPanel extends JPanel {
             "Are you sure you want to delete this material?",
             "Confirm Delete", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            model.removeRow(row);
+            try {
+                int materialId = (int) model.getValueAt(row, 0);
+                materialController.deleteMaterial(materialId);
+                loadMaterials();
+            } catch (ValidationException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }

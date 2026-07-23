@@ -12,6 +12,8 @@ public class Login extends JFrame {
     private UIComponents.RoundedPasswordField passwordField;
     private UIComponents.InlineErrorLabel errorLabel;
     private UIComponents.BubbleBackgroundPanel background;
+    private final cleanpro.desktopapp.controller.LoginController loginController =
+        new cleanpro.desktopapp.controller.LoginController();
 
     public Login() {
         setTitle("LOGIN");
@@ -189,16 +191,22 @@ public class Login extends JFrame {
 
     private void handleLogin() {
         String username = usernameField.getText().trim();
-        char[] password = passwordField.getPassword();
-        if (username.isEmpty() || password.length == 0) {
+        char[] passwordChars = passwordField.getPassword();
+        String password = new String(passwordChars);
+
+        if (username.isEmpty() || password.isEmpty()) {
             errorLabel.showError("Please enter both username and password.");
             return;
         }
-        errorLabel.clear();
-        
-        // Navigate to Dashboard on successful login
-        dispose();
-        SwingUtilities.invokeLater(() -> new Dashboard(username).setVisible(true));
+
+        try {
+            cleanpro.desktopapp.model.User user = loginController.login(username, password);
+            errorLabel.clear();
+            dispose();
+            SwingUtilities.invokeLater(() -> new Dashboard(user.getFirstName()).setVisible(true));
+        } catch (cleanpro.desktopapp.service.exceptions.ValidationException ex) {
+            errorLabel.showError(ex.getMessage());
+        }
     }
 
     private void openRegistration() {

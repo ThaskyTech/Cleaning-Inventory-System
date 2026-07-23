@@ -1,13 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package cleanpro.desktopapp.controller;
 
-/**
- *
- * @author User
- */
+import cleanpro.desktopapp.model.DashboardSummary;
+import cleanpro.desktopapp.service.DashboardService;
+
 public class DashboardController {
-    
+    private final DashboardService dashboardService = new DashboardService();
+
+    public DashboardSummary getDashboardSummary() {
+        return dashboardService.getDashboardSummary();
+    }
 }

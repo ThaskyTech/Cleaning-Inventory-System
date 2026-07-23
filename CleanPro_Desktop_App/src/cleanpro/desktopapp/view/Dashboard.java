@@ -1,6 +1,6 @@
 package cleanpro.desktopapp.view;
 
-import cleanpro.desktopapp.service.DashboardService;
+import cleanpro.desktopapp.controller.DashboardController;
 import cleanpro.desktopapp.model.DashboardSummary;
 import cleanpro.desktopapp.model.RecentIssuance;
 import cleanpro.desktopapp.view.CleanersPanel;
@@ -17,7 +17,7 @@ import java.util.List;
 public class Dashboard extends JFrame {
 
     private final String username;
-    private final DashboardService dashboardService = new DashboardService();
+    private final DashboardController dashboardController = new DashboardController();
     private JPanel contentPanel;
     private JLabel currentViewLabel;
     private JPanel sidebarPanel;
@@ -270,7 +270,7 @@ public class Dashboard extends JFrame {
         banner.add(welcomeSub);
         panel.add(banner, "span 3, growx, height 120!, wrap");
 
-        DashboardSummary summary = dashboardService.getDashboardSummary();
+        DashboardSummary summary = dashboardController.getDashboardSummary();
 
         panel.add(buildStatCard("Total Materials", String.valueOf(summary.getTotalMaterials()), UITheme.ACCENT), "grow");
         panel.add(buildStatCard("Active Cleaners", String.valueOf(summary.getTotalCleaners()), UITheme.TEAL_DARK), "grow");
